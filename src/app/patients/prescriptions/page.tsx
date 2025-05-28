@@ -1,12 +1,12 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { DashboardLayout } from "@/components/layout/dashboard-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/providers/auth-provider"
 import { apiClient } from "@/components/lib/api"
-import { type Prescription, type PatientEnrollment } from "@/components/lib/types"
+import { type Prescription, type PatientEnrollment, UserRole } from "@/components/lib/types"
 import { Plus, Edit, Trash2, Pill } from "lucide-react"
 import Link from "next/link"
 import { formatDate } from "@/components/lib/utils"
@@ -18,15 +18,11 @@ export default function PrescriptionsPage() {
   const [patients, setPatients] = useState<PatientEnrollment[]>([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    fetchData()
-  }, [])
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const [prescriptionsData, patientsData] = await Promise.all([
-        apiClient.getPrescriptions(user?.role === UserRole.DOCTOR ? user.id : undefined),
-        apiClient.getPatientEnrollments(user?.role === UserRole.DOCTOR ? user.id : undefined),
+        apiClient.getPrescriptions(user?.role === UserRole.DOCTOR ? user?.id : undefined),
+        apiClient.getPatients(user?.role === UserRole.DOCTOR ? user?.id : undefined),
       ])
 
       setPrescriptions(prescriptionsData)
@@ -37,7 +33,11 @@ export default function PrescriptionsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user?.role, user?.id])
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this prescription?")) return
