@@ -12,9 +12,13 @@ import { apiClient } from "@/components/lib/api"
 import { type Doctor, type Designation } from "@/components/lib/types"
 import { toast } from "sonner"
 
+interface PageProps {
+  params: {
+    id: string
+  }
+}
 
-
-export default function EditDoctorPage({ params }: { params: { id: string } }) {
+export default function EditDoctorPage({ params }: PageProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
