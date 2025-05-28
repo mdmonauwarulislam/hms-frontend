@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
 import { DashboardLayout } from "@/components/layout/dashboard-layout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -12,15 +12,11 @@ import { apiClient } from "@/components/lib/api"
 import { type Doctor, type Designation } from "@/components/lib/types"
 import { toast } from "sonner"
 
-interface PageProps {
-  params: {
-    id: string
-  }
-  searchParams: { [key: string]: string | string[] | undefined }
-}
-
-export default function EditDoctorPage({ params }: PageProps) {
+export default function EditDoctorPage() {
   const router = useRouter()
+  const params = useParams()
+  const id = params.id as string
+  
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [doctor, setDoctor] = useState<Doctor | null>(null)
@@ -32,7 +28,7 @@ export default function EditDoctorPage({ params }: PageProps) {
 
   const fetchDoctor = useCallback(async () => {
     try {
-      const data = await apiClient.getDoctor(params.id)
+      const data = await apiClient.getDoctor(id)
       setDoctor(data)
       setFormData({
         name: data.name,
@@ -46,7 +42,7 @@ export default function EditDoctorPage({ params }: PageProps) {
     } finally {
       setLoading(false)
     }
-  }, [params.id, router])
+  }, [id, router])
 
   useEffect(() => {
     fetchDoctor()
@@ -57,7 +53,7 @@ export default function EditDoctorPage({ params }: PageProps) {
     setSaving(true)
 
     try {
-      await apiClient.updateDoctor(params.id, formData)
+      await apiClient.updateDoctor(id, formData)
       toast.success("Doctor updated successfully")
       router.push("/doctors")
     } catch (err) {

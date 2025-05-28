@@ -1,6 +1,14 @@
 import { User, Hospital, Doctor, PatientEnrollment, Prescription } from "./types"
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
+// Ensure API_BASE_URL is always a string
+const API_BASE_URL = (() => {
+  const url = process.env.NEXT_PUBLIC_API_URL
+  if (!url) {
+    console.warn('NEXT_PUBLIC_API_URL is not set, using default URL: http://localhost:3001')
+    return 'http://localhost:3001'
+  }
+  return url
+})()
 
 class ApiClient {
   private baseURL: string

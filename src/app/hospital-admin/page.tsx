@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/providers/auth-provider"
 import { apiClient } from "@/components/lib/api"
-import { UserRole, type User } from "@/components/lib/types"
+import { UserRole, type User, type Hospital } from "@/components/lib/types"
 import { UserCheck, Plus, Edit, Trash2, Building2 } from "lucide-react"
 import Link from "next/link"
 import { formatDate } from "@/components/lib/utils"
@@ -45,7 +45,7 @@ export default function HospitalAdminsPage() {
 
     try {
       await apiClient.deleteHospitalAdmin(id)
-      setAdmins(admins.filter((admin) => admin._id !== id))
+      setAdmins(admins.filter((admin) => admin.id !== id))
       toast.success("Hospital admin deleted successfully")
     } catch (error) {
       console.error("Failed to delete hospital admin:", error)
@@ -81,12 +81,12 @@ export default function HospitalAdminsPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {admins.map((admin) => (
-            <Card key={admin._id} className="card-hover">
+            <Card key={admin.id} className="card-hover">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <UserCheck className="h-8 w-8 text-emerald-600" />
                   <div className="flex space-x-2">
-                    <Link href={`/hospital-admins/${admin._id}/edit`}>
+                    <Link href={`/hospital-admins/${admin.id}/edit`}>
                       <Button variant="ghost" size="sm">
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -94,7 +94,7 @@ export default function HospitalAdminsPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => handleDelete(admin._id)}
+                      onClick={() => handleDelete(admin.id)}
                       className="text-red-600 hover:text-red-700"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -106,23 +106,25 @@ export default function HospitalAdminsPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {admin.hospitalId && (
+                  {admin.hospital && (
                     <div className="flex items-center space-x-2">
                       <Building2 className="h-4 w-4 text-slate-500" />
                       <div>
-                        <div className="font-medium text-sm">{(admin.hospitalId as any).name}</div>
-                        <div className="text-xs text-slate-500">{(admin.hospitalId as any).address}</div>
+                        <div className="font-medium text-sm">{admin.hospital.name}</div>
+                        <div className="text-xs text-slate-500">{admin.hospital.address}</div>
                       </div>
                     </div>
                   )}
                   <div className="text-sm text-slate-600">
                     Created: {formatDate(admin.createdAt || new Date().toISOString())}
                   </div>
-                  <Link href={`/hospitals/${admin.hospitalId}`}>
-                    <Button variant="outline" className="w-full">
-                      View Hospital
-                    </Button>
-                  </Link>
+                  {admin.hospitalId && (
+                    <Link href={`/hospitals/${admin.hospitalId}`}>
+                      <Button variant="outline" className="w-full">
+                        View Hospital
+                      </Button>
+                    </Link>
+                  )}
                 </div>
               </CardContent>
             </Card>

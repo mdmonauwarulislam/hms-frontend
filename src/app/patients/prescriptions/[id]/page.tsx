@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
 import { DashboardLayout } from "@/components/layout/dashboard-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -13,8 +13,10 @@ import Link from "next/link"
 import { formatDate } from "@/components/lib/utils"
 import { toast } from "sonner"
 
-export default function PrescriptionDetailPage({ params }: { params: { id: string } }) {
+export default function PrescriptionDetailPage() {
   const router = useRouter()
+  const params = useParams()
+  const id = params.id as string
   const { user } = useAuth()
   const [prescription, setPrescription] = useState<Prescription | null>(null)
   const [patient, setPatient] = useState<PatientEnrollment | null>(null)
@@ -22,11 +24,11 @@ export default function PrescriptionDetailPage({ params }: { params: { id: strin
 
   useEffect(() => {
     fetchData()
-  }, [params.id])
+  }, [id])
 
   const fetchData = async () => {
     try {
-      const prescriptionData = await apiClient.getPrescription(params.id)
+      const prescriptionData = await apiClient.getPrescription(id)
       setPrescription(prescriptionData)
 
       if (prescriptionData.patientEnrollmentId) {

@@ -20,7 +20,7 @@ interface HospitalDetails {
     prescriptions: number
   }
   recentDoctors: Doctor[]
-  recentPatients: PatientEnrollment[]
+  recentPatients: (PatientEnrollment & { doctor?: Doctor })[]
 }
 
 export default function MyHospitalPage() {
@@ -230,7 +230,9 @@ export default function MyHospitalPage() {
                           {patient.age} years • {(patient.doctorId as any)?.name}
                         </p>
                       </div>
-                      <div className="text-xs text-slate-400">{formatDate(patient.dateOfAdmission)}</div>
+                      <div className="text-xs text-slate-400">
+                        {formatDate(patient.dateOfAdmission || patient.createdAt)}
+                      </div>
                     </div>
                   ))
                 ) : (

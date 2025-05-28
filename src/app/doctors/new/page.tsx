@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useAuth } from "@/components/providers/auth-provider"
 import { apiClient } from "@/components/lib/api"
-import { UserRole } from "@/components/lib/types"
+import { UserRole, type Hospital } from "@/components/lib/types"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
@@ -17,7 +17,7 @@ import { toast } from "sonner"
 export default function NewDoctorPage() {
   const { user } = useAuth()
   const router = useRouter()
-  const [hospitals, setHospitals] = useState([])
+  const [hospitals, setHospitals] = useState<Hospital[]>([])
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
@@ -35,9 +35,9 @@ export default function NewDoctorPage() {
         
         // If user is hospital admin, set their hospital ID
         if (user?.role === UserRole.HOSPITAL_ADMIN && user.hospitalId) {
-          setFormData(prev => ({ ...prev, hospitalId: user.hospitalId }))
+          setFormData(prev => ({ ...prev, hospitalId: user.hospitalId || "" }))
         }
-      } catch (error) {
+      } catch {
         toast.error("Failed to fetch hospitals")
       }
     }
@@ -46,8 +46,13 @@ export default function NewDoctorPage() {
   }, [user])
 
   // Redirect if not authorized
+  useEffect(() => {
+    if (user?.role !== UserRole.SUPER_ADMIN && user?.role !== UserRole.HOSPITAL_ADMIN) {
+      router.push("/dashboard")
+    }
+  }, [user, router])
+
   if (user?.role !== UserRole.SUPER_ADMIN && user?.role !== UserRole.HOSPITAL_ADMIN) {
-    router.push("/dashboard")
     return null
   }
 
@@ -67,8 +72,9 @@ export default function NewDoctorPage() {
       await apiClient.createDoctor(formData)
       toast.success("Doctor created successfully")
       router.push("/doctors")
-    } catch (error: any) {
-      toast.error(error.message || "Failed to create doctor")
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to create doctor"
+      toast.error(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -182,7 +188,7 @@ export default function NewDoctorPage() {
                         <SelectValue placeholder="Select a hospital" />
                       </SelectTrigger>
                       <SelectContent>
-                        {hospitals.map((hospital: any) => (
+                        {hospitals.map((hospital) => (
                           <SelectItem key={hospital._id} value={hospital._id}>
                             {hospital.name}
                           </SelectItem>

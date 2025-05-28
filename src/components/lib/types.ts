@@ -11,6 +11,8 @@ export enum UserRole {
     role: UserRole
     hospitalId?: string
     specialization?: string
+    createdAt?: string
+    hospital?: Hospital
   }
   
   export interface Hospital {

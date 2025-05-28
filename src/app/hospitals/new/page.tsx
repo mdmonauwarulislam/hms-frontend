@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { DashboardLayout } from "@/components/layout/dashboard-layout"
 import { Card, CardContent } from "@/components/ui/card"
@@ -31,8 +31,13 @@ export default function NewHospitalPage() {
   const [loading, setLoading] = useState(false)
 
   // Redirect if not super admin
+  useEffect(() => {
+    if (user?.role !== UserRole.SUPER_ADMIN) {
+      router.push("/dashboard")
+    }
+  }, [user, router])
+
   if (user?.role !== UserRole.SUPER_ADMIN) {
-    router.push("/dashboard")
     return null
   }
 
@@ -74,8 +79,9 @@ export default function NewHospitalPage() {
       await apiClient.createHospital(hospitalData)
       toast.success("Hospital created successfully")
       router.push("/hospitals")
-    } catch (error: any) {
-      toast.error(error.message || "Failed to create hospital")
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to create hospital"
+      toast.error(errorMessage)
     } finally {
       setLoading(false)
     }
