@@ -9,15 +9,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useAuth } from "@/components/providers/auth-provider"
-import { apiClient } from "@/lib/api"
-import { UserRole, type Hospital } from "@/lib/types"
+import { apiClient } from "@/components/lib/api"
+import { UserRole, type Hospital } from "@/components/lib/types"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
-import { useToast } from "@/hooks/use-toast"
+import { toast } from "sonner"
 
 export default function NewHospitalAdminPage() {
   const { user } = useAuth()
-  const { toast } = useToast()
   const router = useRouter()
   const [formData, setFormData] = useState({
     name: "",
@@ -54,17 +53,10 @@ export default function NewHospitalAdminPage() {
 
     try {
       await apiClient.createHospitalAdmin(formData)
-      toast({
-        title: "Success",
-        description: "Hospital administrator created successfully",
-      })
+      toast.success("Hospital administrator created successfully")
       router.push("/hospital-admins")
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to create hospital administrator",
-        variant: "destructive",
-      })
+      toast.error(error.message || "Failed to create hospital administrator")
     } finally {
       setLoading(false)
     }

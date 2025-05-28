@@ -5,16 +5,15 @@ import { DashboardLayout } from "@/components/layout/dashboard-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/providers/auth-provider"
-import { apiClient } from "@/lib/api"
-import { UserRole, type User } from "@/lib/types"
+import { apiClient } from "@/components/lib/api"
+import { UserRole, type User } from "@/components/lib/types"
 import { UserCheck, Plus, Edit, Trash2, Building2 } from "lucide-react"
 import Link from "next/link"
-import { formatDate } from "@/lib/utils"
-import { useToast } from "@/hooks/use-toast"
+import { formatDate } from "@/components/lib/utils"
+import { toast } from "sonner"
 
 export default function HospitalAdminsPage() {
   const { user } = useAuth()
-  const { toast } = useToast()
   const [admins, setAdmins] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -35,11 +34,7 @@ export default function HospitalAdminsPage() {
       setAdmins(data)
     } catch (error) {
       console.error("Failed to fetch hospital admins:", error)
-      toast({
-        title: "Error",
-        description: "Failed to fetch hospital admins",
-        variant: "destructive",
-      })
+      toast.error("Failed to fetch hospital admins")
     } finally {
       setLoading(false)
     }
@@ -51,17 +46,10 @@ export default function HospitalAdminsPage() {
     try {
       await apiClient.deleteHospitalAdmin(id)
       setAdmins(admins.filter((admin) => admin._id !== id))
-      toast({
-        title: "Success",
-        description: "Hospital admin deleted successfully",
-      })
+      toast.success("Hospital admin deleted successfully")
     } catch (error) {
       console.error("Failed to delete hospital admin:", error)
-      toast({
-        title: "Error",
-        description: "Failed to delete hospital admin",
-        variant: "destructive",
-      })
+      toast.error("Failed to delete hospital admin")
     }
   }
 
