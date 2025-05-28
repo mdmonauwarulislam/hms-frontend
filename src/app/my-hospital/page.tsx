@@ -5,12 +5,12 @@ import { DashboardLayout } from "@/components/layout/dashboard-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/providers/auth-provider"
-import { apiClient } from "@/lib/api"
-import { UserRole, type Hospital, type Doctor, type PatientEnrollment } from "@/lib/types"
+import { apiClient } from "@/components/lib/api"
+import { UserRole, type Hospital, type Doctor, type PatientEnrollment } from "@/components/lib/types"
 import { Building2, Users, User, Pill, MapPin, Calendar, Plus } from "lucide-react"
 import Link from "next/link"
-import { formatDate } from "@/lib/utils"
-import { useToast } from "@/hooks/use-toast"
+import { formatDate } from "@/components/lib/utils"
+import { toast } from "sonner"
 
 interface HospitalDetails {
   hospital: Hospital
@@ -25,7 +25,7 @@ interface HospitalDetails {
 
 export default function MyHospitalPage() {
   const { user } = useAuth()
-  const { toast } = useToast()
+ 
   const [hospitalDetails, setHospitalDetails] = useState<HospitalDetails | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -46,11 +46,7 @@ export default function MyHospitalPage() {
       setHospitalDetails(data)
     } catch (error) {
       console.error("Failed to fetch hospital details:", error)
-      toast({
-        title: "Error",
-        description: "Failed to fetch hospital details",
-        variant: "destructive",
-      })
+      toast.error("Failed to fetch hospital details")
     } finally {
       setLoading(false)
     }
