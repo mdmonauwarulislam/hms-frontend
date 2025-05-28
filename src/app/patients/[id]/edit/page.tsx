@@ -135,14 +135,14 @@ export default function EditPatientPage() {
           </Link>
           <div>
             <h1 className="text-3xl font-bold text-emerald-900">Edit Patient</h1>
-            <p className="text-slate-600">Update patient information</p>
+            <p className="text-slate-600">Update patient&apos;s information</p>
           </div>
         </div>
 
         <Card>
           <CardHeader>
             <CardTitle>Patient Information</CardTitle>
-            <CardDescription>Update the patient's details below</CardDescription>
+            <CardDescription>Update the patient&apos;s details below</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">

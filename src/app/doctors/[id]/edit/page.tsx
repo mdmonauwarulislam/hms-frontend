@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { DashboardLayout } from "@/components/layout/dashboard-layout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -25,11 +25,7 @@ export default function EditDoctorPage({ params }: { params: { id: string } }) {
     designation: 'General Physician' as Designation,
   })
 
-  useEffect(() => {
-    fetchDoctor()
-  }, [params.id])
-
-  const fetchDoctor = async () => {
+  const fetchDoctor = useCallback(async () => {
     try {
       const data = await apiClient.getDoctor(params.id)
       setDoctor(data)
@@ -45,7 +41,11 @@ export default function EditDoctorPage({ params }: { params: { id: string } }) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [params.id, router])
+
+  useEffect(() => {
+    fetchDoctor()
+  }, [fetchDoctor])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

@@ -60,7 +60,7 @@ export default function PrescriptionDetailPage({ params }: { params: { id: strin
             <Pill className="h-12 w-12 text-slate-400 mb-4" />
             <h3 className="text-lg font-medium text-slate-900 mb-2">Prescription not found</h3>
             <p className="text-slate-600 text-center mb-4">
-              The prescription you're looking for doesn't exist or you don't have access to it.
+              The prescription you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.
             </p>
             <Button onClick={() => router.push("/patients/prescriptions")}>
               <ArrowLeft className="h-4 w-4 mr-2" />

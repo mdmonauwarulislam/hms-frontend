@@ -1,12 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { DashboardLayout } from "@/components/layout/dashboard-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/providers/auth-provider"
 import { apiClient } from "@/components/lib/api"
-import { UserRole, type Doctor, type PatientEnrollment, type Hospital } from "@/components/lib/types"
+import { UserRole, type Doctor, type PatientEnrollment } from "@/components/lib/types"
 import { Plus, Pencil, Trash2, Eye } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
@@ -26,11 +26,7 @@ export default function DoctorsPage() {
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
   const [hospitalNames, setHospitalNames] = useState<Record<string, string>>({})
 
-  useEffect(() => {
-    fetchDoctors()
-  }, [])
-
-  const fetchDoctors = async () => {
+  const fetchDoctors = useCallback(async () => {
     try {
       let data
       if (user?.role === UserRole.HOSPITAL_ADMIN && user.hospitalId) {
@@ -61,7 +57,11 @@ export default function DoctorsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user?.role, user?.hospitalId])
+
+  useEffect(() => {
+    fetchDoctors()
+  }, [fetchDoctors])
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this doctor?")) return

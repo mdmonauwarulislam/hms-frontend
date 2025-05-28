@@ -128,7 +128,7 @@ export default function DashboardPage() {
         <div>
           <h1 className="text-3xl font-bold text-emerald-900">Dashboard</h1>
           <p className="text-slate-600">
-            Welcome back, {user?.name}! Here's an overview of your {user?.role.replace("_", " ").toLowerCase()}{" "}
+            Welcome back, {user?.name}! Here&apos;s an overview of your {user?.role.replace("_", " ").toLowerCase()}{" "}
             dashboard.
           </p>
         </div>

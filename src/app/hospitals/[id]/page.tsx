@@ -1,16 +1,14 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useParams } from "next/navigation"
 import { DashboardLayout } from "@/components/layout/dashboard-layout"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/providers/auth-provider"
 import { apiClient } from "@/components/lib/api"
 import { UserRole, type Hospital, type User, type Doctor } from "@/components/lib/types"
-import { Building2, MapPin, Phone, Mail, Globe, Calendar, Users, UserPlus } from "lucide-react"
-import Link from "next/link"
-import { formatDate } from "@/components/lib/utils"
+import { Building2, MapPin, Phone, Mail, Globe, Calendar, UserPlus } from "lucide-react"
 import { toast } from "sonner"
 import {
   Dialog,
@@ -46,15 +44,7 @@ export default function HospitalDetailsPage() {
   const [editingAdmin, setEditingAdmin] = useState<User | null>(null)
   const [isDeletingAdmin, setIsDeletingAdmin] = useState(false)
 
-  useEffect(() => {
-    fetchHospitalDetails()
-    if (user?.role === UserRole.SUPER_ADMIN) {
-      fetchHospitalAdmins()
-    }
-    fetchHospitalDoctors()
-  }, [params.id])
-
-  const fetchHospitalDetails = async () => {
+  const fetchHospitalDetails = useCallback(async () => {
     try {
       // First get the basic hospital info
       const hospital = await apiClient.getHospital(params.id as string)
@@ -84,9 +74,9 @@ export default function HospitalDetailsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [params.id])
 
-  const fetchHospitalDoctors = async () => {
+  const fetchHospitalDoctors = useCallback(async () => {
     try {
       const response = await apiClient.getDoctors(params.id as string)
       console.log('Doctors response:', response) // Debug log
@@ -95,9 +85,9 @@ export default function HospitalDetailsPage() {
       console.error("Failed to fetch hospital doctors:", error)
       toast.error("Failed to fetch hospital doctors")
     }
-  }
+  }, [params.id])
 
-  const fetchHospitalAdmins = async () => {
+  const fetchHospitalAdmins = useCallback(async () => {
     try {
       console.log('Starting to fetch hospital admins...') // Debug log
       const response = await apiClient.getHospitalAdmins()
@@ -137,7 +127,15 @@ export default function HospitalDetailsPage() {
         toast.error("Failed to fetch hospital admins")
       }
     }
-  }
+  }, [params.id])
+
+  useEffect(() => {
+    fetchHospitalDetails()
+    if (user?.role === UserRole.SUPER_ADMIN) {
+      fetchHospitalAdmins()
+    }
+    fetchHospitalDoctors()
+  }, [params.id, user?.role, fetchHospitalDetails, fetchHospitalAdmins, fetchHospitalDoctors])
 
   const handleAssignAdmin = async () => {
     if (!newAdminEmail || !newAdminPassword || !newAdminName) {
